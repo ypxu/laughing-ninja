@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Realtime Transit Map (Uber)</title>
+
+  <!-- external css lib -->
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- css -->
+  <link href="/css/main.css" rel="stylesheet" />
+
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <style type="text/css">
+    html { height: 100% }
+    body { height: 100%; margin: 0; padding: 0 }
+    #map-canvas { height: 70%; width: 70% }
+  </style>
+
+</head>
+<body>
+
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Realtime Transit Map</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+  <div class="container main-container">
+
+    <!-- Near stops display table -->
+    <h2>Stops near me within 200m</h2>
+
+    <div id="stop-table">
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Stop</th>
+            <th>Route</th>
+            <th>Agency</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Distance (Meters)</th>
+            <th>Direction</th>
+            <th>Next Departure (Minutes)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4" style="text-align: center">
+              <strong>Loading</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>    
+
+  </div><!-- /.container -->
+
+  <div id="map-canvas" class="container"></div>
+    
+  <script type="text/template" id="stop-row">
+    <td title='<%= key %>'><%= stopTitle %></td>
+    <td><%= routeTitle %></td>
+    <td><%= agencyTitle %></td>
+    <td><%- parseFloat(lat).toFixed(4) %></td>
+    <td><%- parseFloat(lon).toFixed(4) %></td>
+    <td><%- dist.toFixed(2) %></td>
+    <td><%= direction %></td>
+    <td><strong><%= departure %></strong></td>
+    <td><button class="btn btn-default" id="update" data-loading-text="Loading...">Update</button></td>
+  </script>
+
+  <script type="text/template" id="map-info-window">
+    <div id="content">
+      <strong id="firstHeading" class="firstHeading"><%= stopTitle %></strong>
+      <div id="bodyContent">
+        <div>Latitude: <%- parseFloat(lat).toFixed(4) %></div>
+        <div>Longtide: <%- parseFloat(lon).toFixed(4) %></div>
+      </div>
+    </div>
+  </script>
+
+  <!-- external js lib -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js" type="text/javascript"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js" type="text/javascript"></script>
+
+  <!-- js -->
+  <script src="/js/geoapi.js" type="text/javascript"></script>
+  <script src="/js/main.js" type="text/javascript"></script>
+
+</body>
+</html>

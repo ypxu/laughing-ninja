@@ -1,0 +1,11 @@
+
+# virtualenv related
+venv
+
+# Vagrant related
+.vagrant/
+
+# Execution files
+*.pyc
+
+build/
