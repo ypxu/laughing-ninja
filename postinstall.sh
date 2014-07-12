@@ -12,7 +12,7 @@ sudo apt-get install -y python-pip python-virtualenv
 cd /$user
 
 # setup virtualenv
-if [ ! -f venv ]
+if [ ! -d venv ]
 then
   virtualenv venv 
   source venv/bin/activate

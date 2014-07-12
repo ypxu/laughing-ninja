@@ -2,5 +2,8 @@ Flask
 requests
 redis
 
+gunicorn
+supervisor
+
 mock
 nose

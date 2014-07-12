@@ -15,36 +15,38 @@ from monkey_patch_flask import patch_flask_jsonify, CustomEncoder
 
 
 app = Flask(__name__, template_folder='')
+app.config.from_pyfile('config/config.cfg')
+
 cmd = nextbus.Command()
 client = Redis()
 geo_cli = GeoHasher(redis_client=client, lookup_key='stops')
 
 
 def init_redis():
-    app.logger.info('Initialize redis from nextbus.')
+    app.logger.debug('Initialize redis from nextbus.')
     agency_list = cmd.get_agency_list()
-    app.logger.info('### Add %s agency' % len(agency_list))
+    app.logger.debug('### Add %s agency' % len(agency_list))
 
     agency_key = 'agency'
     for agency in agency_list:
         if not agency or client.sismember(agency_key, agency.tag):
             continue
         routes = cmd.get_route_config(agency.tag)
-        app.logger.info('### Add %s agency, %s routes' % (
+        app.logger.debug('### Add %s agency, %s routes' % (
             agency.tag, len(routes)))
         for route in routes:
             init_route(route)
         client.set('%s:%s' % (agency_key, agency.tag), json.dumps(
             agency, cls=CustomEncoder))
         client.sadd(agency_key, agency.tag)
-    app.logger.info('Done initialization redis.')
+    app.logger.debug('Done initialization redis.')
 
 
 def init_route(route, route_key='route', stop_key='stop'):
     if not route or client.sismember(route_key, route.tag):
         return
     stops = route.stops
-    app.logger.info('### Add %s agency, %s routes, %s stops' % (
+    app.logger.debug('### Add %s agency, %s routes, %s stops' % (
         agency.tag, route.tag, len(stops)))
     for stop in stops:
         stop_key = '%s:%s:%s:%s' % (stop_key, agency.tag, route.tag, stop.tag)
@@ -54,6 +56,14 @@ def init_route(route, route_key='route', stop_key='stop'):
     client.set('%s:%s:%s' % (route_key, agency.tag, route.tag),
         json.dumps(route, cls=CustomEncoder))
     client.sadd(route_key, route.tag)
+
+
+def setup_logging():
+    app.logger.addHandler(logging.StreamHandler())
+    if app.debug:
+        app.logger.setLevel(logging.DEBUG)
+    else:
+        app.logger.setLevel(logging.INFO)
 
 
 @app.route("/")
@@ -113,27 +123,19 @@ def near_routes():
     return flask.jsonify(result=geo_cli.query_by_radius(lat, lon, rad))
 
 
-@app.route("/js/main.js")
-def main_js():
-    return send_from_directory('js', 'main.js')
+@app.route("/js/<filename>")
+def js(filename):
+    return send_from_directory('js', filename)
 
 
-@app.route("/js/geoapi.js")
-def geoapi_js():
-    return send_from_directory('js', 'geoapi.js')
-
-
-@app.route("/css/main.css")
-def css():
-    return send_from_directory('css', 'main.css')
-
-
-def setup_logging(options):
-    app.logger.addHandler(logging.StreamHandler())
-    app.logger.setLevel(logging.INFO)
+@app.route("/css/<filename>")
+def css(filename):
+    return send_from_directory('css', filename)
 
 
 if __name__ == '__main__':
+    # Development
+
     parser = argparse.ArgumentParser(description='Run transit app')
     parser.add_argument('--debug', action='store_true',
       help="debug mode", required=False)
@@ -148,8 +150,20 @@ if __name__ == '__main__':
 
     patch_flask_jsonify()
 
-    setup_logging(options)
+    setup_logging()
 
     app.run(host=options.host, port=options.port,
       debug=options.debug)
 
+else:
+    # Deploy with Gunicorn (Production)
+
+    from werkzeug.contrib.fixers import ProxyFix
+
+    app.wsgi_app = ProxyFix(app.wsgi_app)
+
+    thread.start_new_thread(init_redis, ())
+
+    patch_flask_jsonify()
+
+    setup_logging()
