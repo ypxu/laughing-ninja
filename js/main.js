@@ -1,10 +1,4 @@
-
-$(function(){
-
-  Application.init()
-
-});
-
+// main.js
 
 var Application = (function(){
 
@@ -99,25 +93,19 @@ var Application = (function(){
 
     el: '#stop-table',
 
-    views: [],
-
     initialize: function(){
       this.collection.on('add', this.render, this);
       this.collection.on('reset', this.render, this);
     },
 
     render: function(){
-      var that = this;
+      var view,
+          that = this;
       this.$('tbody').html('')
       this.collection.each(function(model, index){
-        view = that.views[index]
-        if(view) {
-          view.model.set(model.toJSON())
-        } else {
-          view = new StopRowView({
-            model: model
-          })
-        }
+        view = new StopRowView({
+          model: model
+        })
         that.$('tbody').append(view.render().$el)
       });
       return this
@@ -156,27 +144,23 @@ var Application = (function(){
         result,
         val = '',
         url = window.location.href;
-
+    // key empty or url doesn't have query parameters
     if(!key || url.indexOf('?') < 0) {
       return val
     }
-    try{
-      result = url.match(new RegExp(regex + key + "=(.*)"));
-      if(result && result.length == 2) {
-        val = parseInt(result[1])
-      }
-    }catch(e){
-      // pass
+    result = url.match(new RegExp(regex + key + "=(.*)"));
+    if(result && result.length == 2) {
+      val = parseInt(result[1])
     }
     return val
   }
 
-  var stopList = new StopList();
 
   return {
     init: function(){
 
-      var radius = get_value_from_url('radius') || 200,
+      var stopList = new StopList(),
+          radius = get_value_from_url('radius') || 200,
           tableView = new StopTableView({
         collection: stopList
       })
@@ -207,3 +191,9 @@ var Application = (function(){
   }
 
 })()
+
+$(function(){
+
+  Application.init()
+
+});

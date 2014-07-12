@@ -1,5 +1,6 @@
-// Geo API make request to backend
+// geoapi.js
 
+// Geo API make request to backend
 
 (function(win, options){
   var geo_api = {},

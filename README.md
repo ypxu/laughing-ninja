@@ -30,6 +30,17 @@ The departure times will be fetched after we find out the nearby stops.
   * Most familiar javascript framework, use it since early 2012
   * Rewrite a existed Flex-based application to backbone-based js application
 
+# Development
+* Vagrant
+  * Use for almost every projects to setup development environment
+* Run development
+  ```
+  $ cd /vagrant/
+  $ source venv/bin/activate
+  $ ./uber_map.py --debug
+  ```
+  * http://localhost:5080
+
 # Deployment
 * Gunicorn
   * Easy to use pre-fork WSGI Http Server
@@ -43,6 +54,7 @@ The departure times will be fetched after we find out the nearby stops.
 # Future Improvement
 * Add unittest for nextbus module
 * Add unittest for Flask's request handler
+* Compress / Minify UI javascript to reduce http requests
 * Enhance UI with websocket to show departure time
 * Show all stops's departure time of a route
 * Cache prediction response to improve performance using redis. (ttl < 1 min)
