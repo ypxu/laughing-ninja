@@ -35,24 +35,24 @@ def init_redis():
         app.logger.debug('### Add %s agency, %s routes' % (
             agency.tag, len(routes)))
         for route in routes:
-            init_route(route)
+            init_route(agency, route)
         client.set('%s:%s' % (agency_key, agency.tag), json.dumps(
             agency, cls=CustomEncoder))
         client.sadd(agency_key, agency.tag)
     app.logger.debug('Done initialization redis.')
 
 
-def init_route(route, route_key='route', stop_key='stop'):
+def init_route(agency, route, route_key='route', stop_key='stop'):
     if not route or client.sismember(route_key, route.tag):
         return
     stops = route.stops
     app.logger.debug('### Add %s agency, %s routes, %s stops' % (
         agency.tag, route.tag, len(stops)))
     for stop in stops:
-        stop_key = '%s:%s:%s:%s' % (stop_key, agency.tag, route.tag, stop.tag)
-        client.sadd(stop_key, stop.tag)
-        client.set(stop_key, json.dumps(stop, cls=CustomEncoder))
-        geo_cli.add_coordinate(stop.lat, stop.lon, stop_key)
+        stop_k = '%s:%s:%s:%s' % (stop_key, agency.tag, route.tag, stop.tag)
+        client.sadd(stop_k, stop.tag)
+        client.set(stop_k, json.dumps(stop, cls=CustomEncoder))
+        geo_cli.add_coordinate(stop.lat, stop.lon, stop_k)
     client.set('%s:%s:%s' % (route_key, agency.tag, route.tag),
         json.dumps(route, cls=CustomEncoder))
     client.sadd(route_key, route.tag)
