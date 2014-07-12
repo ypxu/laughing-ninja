@@ -49,8 +49,7 @@ namespace :deploy do
       # execute :touch, release_path.join('tmp/restart.txt')
       within release_path do
         #execute :virtualenv, 'venv'
-        execute :source, 'venv/bin/activate'
-        execute :pip, 'install -r requirements.txt'
+        execute "cd #{release_path}; source venv/bin/activate; pip install -r requirements.txt"
         execute :ln, '-s config/supervisord.conf'
       end
     end
@@ -62,8 +61,7 @@ namespace :deploy do
       # Your restart mechanism here, for example:
       # execute :touch, release_path.join('tmp/restart.txt')
       within release_path do
-        execute :source, 'venv/bin/activate'
-        execute :supervisorctl, 'restart uber_map'
+        execute "cd #{release_path}; source venv/bin/activate; supervisorctl restart uber_map"
       end
     end
   end
