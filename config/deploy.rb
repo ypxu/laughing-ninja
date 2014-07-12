@@ -31,7 +31,6 @@ set :deploy_via, :remote_cache
 
 # Default value for linked_dirs is []
 # set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
-set :linked_dirs, %w{venv}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -48,7 +47,7 @@ namespace :deploy do
       # Your restart mechanism here, for example:
       # execute :touch, release_path.join('tmp/restart.txt')
       within release_path do
-        #execute :virtualenv, 'venv'
+        execute :virtualenv, 'venv'
         execute "cd #{release_path}; source venv/bin/activate; pip install -r requirements.txt"
         execute :ln, '-s config/supervisord.conf'
       end
