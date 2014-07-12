@@ -7,7 +7,7 @@ The underlying technique is based on geo hashing to find the nearest stops. The 
 
 The departure times will be fetched after we find out the nearby stops.
 
-[Demo](http://demo.trenvenue.com)(Linode1024)
+[Demo](http://demo.trenvenue.com) (Linode1024)
 
 # Platform
 * Python
