@@ -86,7 +86,7 @@ var Application = (function(){
     },
 
     render: function(){
-      this.$el.html(this.template(this.model.toJSON())); 
+      this.$el.html(this.template(this.model.toJSON()));
       // load stop info and predition
       if(!this.model.get('stopTitle')) {
         this.model.load_stop()
@@ -136,7 +136,7 @@ var Application = (function(){
   function initialize_map() {
     if(geopos){
       var mapOptions = {
-        center: new google.maps.LatLng(geopos.latitude, geopos.longitude),    
+        center: new google.maps.LatLng(geopos.latitude, geopos.longitude),
         zoom: 17
       };
       google_map = new google.maps.Map(document.getElementById("map-canvas"),
@@ -151,22 +151,50 @@ var Application = (function(){
     }
   }
 
+  function get_value_from_url(key) {
+    var regex = ".*[?&]?" ,
+        result,
+        val = '',
+        url = window.location.href;
+
+    if(!key || url.indexOf('?') < 0) {
+      return val
+    }
+    try{
+      result = url.match(new RegExp(regex + key + "=(.*)"));
+      if(result && result.length == 2) {
+        val = parseInt(result[1])
+      }
+    }catch(e){
+      // pass
+    }
+    return val
+  }
+
   var stopList = new StopList();
 
   return {
     init: function(){
-      
-      var tableView = new StopTableView({
+
+      var radius = get_value_from_url('radius') || 200,
+          tableView = new StopTableView({
         collection: stopList
       })
+
+      // Prevent people from screwing around
+      if(radius > 1000) {
+        radius = 200
+      }
+
+      $("#label-radius").html(radius);
 
       // Google Maps
       window.initialize_map = initialize_map;
 
       geolocation.getCurrentPosition(function(pos){
         geopos = pos.coords;
-       
-        geoapi.get_near_stops(geopos.latitude, geopos.longitude, 200, 
+
+        geoapi.get_near_stops(geopos.latitude, geopos.longitude, radius,
           function(resp){
             stopList.reset(resp['result'])
             fetch_maps_api();
