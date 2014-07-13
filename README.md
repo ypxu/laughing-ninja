@@ -3,9 +3,11 @@ Realtime Transit Map (Departure Times)
 
 This project intends as demo/prototype of geo hashing. It provides geolocated departure timetable for user in realtime. Based on user current latitude and longitude, it lists out nearby public transportation stops within certain radius.
 
-The underlying technique is based on geo hashing to find the nearest stops. The latitude and longitude of all stops are converted to 64bit integer and stored in redis's sorted set. When searching nearby stops around user, we will convert the latitude and longitude to corresponding 64bit integer based on desired resolution.
+The underlying technique is based on geo hashing to find the nearest stops. The latitude and longitude of all stops are converted to 64 bits integer and stored in redis's sorted set. When searching nearby stops around user, we will convert the latitude and longitude to corresponding 64bit integer based on desired resolution.
 
-The departure times will be fetched after we find out the nearby stops.
+When the app starts, it will initialize the redis datastore with all the stops information including latitude and longitude. It also does the 64 bits integer geohashing and add the coordination into a sorted set for lookup purpose. The departure times will be fetched after we find out the nearby stops.
+
+The redis initialization step might take some times because of API round trips and processing time. It might causes the nearby stop lookup return empty results. We could optimize it by using RDB dump. Because we're storing all the stops information during initialization, it could be issues if stop update its geo location. We could implement a cron script to update the stops data periodically.
 
 [Demo](http://demo.trenvenue.com) (Linode1024)
 
@@ -54,6 +56,7 @@ The departure times will be fetched after we find out the nearby stops.
 # Future Improvement
 * Add unittest for nextbus module
 * Add unittest for Flask's request handler
+* Add unittest for javascript helper functions
 * Compress / Minify UI javascript to reduce http requests
 * Enhance UI with websocket to show departure time
 * Show all stops's departure time of a route
