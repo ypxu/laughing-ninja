@@ -40,3 +40,11 @@ class EncodeTestCase(unittest.TestCase):
     def test_move_lon(self):
         self.assertEqual(encode.move_lon(3, steps=2, flag=1), 6) 
         self.assertEqual(encode.move_lon(3, steps=2, flag=-1), 2) 
+
+    def test_to_float(self):
+        self.assertTrue(0 == encode.to_float(''))
+        self.assertTrue(1.0 == encode.to_float('1'))
+        self.assertTrue(1.2 == encode.to_float('1.2'))
+        self.assertTrue(1.0 == encode.to_float(1))
+        self.assertTrue(1.0 == encode.to_float(1.0))
+        self.assertTrue(0 == encode.to_float('TEST'))

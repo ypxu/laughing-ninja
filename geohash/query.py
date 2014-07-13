@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
 import encode
-import logging
 from math import radians, cos, sin, asin, sqrt
-
-logger = logging.getLogger()
 
 
 # resolution in meters
@@ -56,9 +53,9 @@ class GeoHasher(object):
         Query points within certain radius around point (lat/lon)
         '''
 
-        lat = self.to_float(lat)
-        lon = self.to_float(lon)
-        radius = self.to_float(radius)
+        lat = encode.to_float(lat)
+        lon = encode.to_float(lon)
+        radius = encode.to_float(radius)
 
         resolution = self.radius_to_range(radius)
         hash_val = encode.encode_int(lat, lon, steps=resolution / 2)
@@ -122,11 +119,3 @@ class GeoHasher(object):
 
     def left_shift(self, val, shift):
         return val << shift
-
-    def to_float(self, val):
-        try:
-            if isinstance(val, basestring):
-                return float(val)
-        except:
-            logger.error('Bad float value {0}'.format(val))
-        return val
